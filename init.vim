@@ -19,7 +19,12 @@ call plug#begin('~/.vim/plugged')
     Plug 'prettier/vim-prettier'
     Plug 'pangloss/vim-javascript'
     Plug 'w0rp/ale'
-    Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
+    Plug 'tmux-plugins/vim-tmux-focus-events' " Restore focus events when inside tmux
+    Plug 'psliwka/vim-smoothie' " Smooth scrolling in vim
+    Plug 'tomtom/tcomment_vim' " Comment stuff out easily
+    Plug 'mattn/emmet-vim' " Makes writing HTML and CSS much easier
+    Plug 'jiangmiao/auto-pairs' " Insert or delete brackets, parens, quotes in pair.
+    Plug 'ervandew/supertab' " Use <Tab> for autocompletion in insert mode
 " List ends here. Plugins become visible to Vim after this call.
 call plug#end()
 "Config Section
@@ -40,6 +45,7 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isT
 " Toggle
 function! ToggleNERDTree()
   :if exists("b:NERDTree") && b:NERDTree.IsOpen()
+    call g:NERDTree.ForCurrentTab().getRoot().refresh() | call g:NERDTree.ForCurrentTab().render()
     :set nonumber
   :else
     :set number
@@ -47,10 +53,6 @@ function! ToggleNERDTree()
   :NERDTreeToggle
 endfunction
 nnoremap <silent> <C-b> :call ToggleNERDTree()<CR>
-" Nerdtree tiagofumo/vim-nerdtree-syntax-highlight
-let g:NERDTreeFileExtensionHighlightFullName = 1
-let g:NERDTreeExactMatchHighlightFullName = 1
-let g:NERDTreePatternMatchHighlightFullName = 1
 
 " dev-icons
 if exists('g:loaded_webdevicons')
@@ -63,9 +65,8 @@ let $FZF_DEFAULT_COMMAND = 'ag -g ""'
 let g:fzf_preview_window = ['right:50%', 'ctrl-/']
 " nnoremap <C-p> :FZF<CR>
 " et g:fzf_action = {'ctrl-t': 'tab split', 'ctrl-s': 'split', 'ctrl-v': 'vsplit'}
-nnoremap <C-p> :Files<CR>
+nnoremap <C-p> :GFiles<CR>
 nnoremap <C-o> :Buffers<CR>
-nnoremap <C-g> :GFiles<CR>
 " `brew install ripgrep`
 nnoremap <C-f> :Rg<CR>
 
@@ -110,8 +111,16 @@ nnoremap <c-n> :call OpenTerminal()<CR>
 let g:ale_echo_msg_error_str = 'E'
 let g:ale_echo_msg_warning_str = 'W'
 let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
+let g:ale_sign_error = '❌'
+let g:ale_sign_warning = '⚠️'
+let g:ale_fixers['javascript'] = ['eslint']
+
+" Fix files automatically on save
+let g:ale_fix_on_save = 1
 
 
 " other
+" c-s to save
 nnoremap <silent> <C-S> :if expand("%") == ""<CR>browse confirm w<CR>else<CR>confirm w<CR>endif<CR>
 :set number
+set tabstop=4 shiftwidth=4 expandtab
